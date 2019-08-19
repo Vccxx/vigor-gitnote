@@ -14,10 +14,12 @@ cd /usr/src/glibc
 sudo tar xvf glibc-x.xx.tar.xz
 ```
 在gdb中使用:
-```s
+```shell
+dir /usr/src/glibc/glibc-x.xx/malloc
 ```
+即可开始调试。
 ## house of orange 基本原理
-
+本题的关键难点在于如何泄露libc地址，由于题目
 # exp
 ```python
 from pwn import *
