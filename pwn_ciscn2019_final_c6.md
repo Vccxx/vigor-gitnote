@@ -21,7 +21,8 @@ dir /usr/src/glibc/glibc-x.xx/malloc
 ## house of orange 基本原理及在本题中的应用
 house of orange简单来说就是利用溢出或者任意地址写的前置漏洞来修改topchunk的size字段，将其改小，从而可以通过若干次malloc来竭尽topchunk的空间，迫使ptmalloc将不足以满足用户需求的topchunk free到unsorted bin中。
 这里之所以要改小topchunk的size而不是直接malloc一个超大的块，是因为如果申请的堆块大小超过了128k，ptmalloc就会调用mmap来申请内存，而不是brk，这样就不能影响到topchunk了。
-
+修改topchunk的size有四个限制：
+1. 
 这样的手法主要用于
 - 不能调用free函数的情况（它能够触发free(topchunk)）；
 - 不能通过常规方式泄露libc地址的情况（如本题）。
