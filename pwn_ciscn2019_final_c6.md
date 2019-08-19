@@ -38,6 +38,67 @@ house of orange简单来说就是利用溢出或者任意地址写的前置漏�
 通过上述的house of orange 似乎可以方便地泄露libc地址，但是实验发现topchunk在枯竭之后，似乎并没有被放到任何一个bin中，就被新的topchunk取代了....目前不知道是什么情况。
 ![image.png](0) ![image.png](1)
 通过学习和调试，了解了glibc-2.27在topchunk大小无法满足用户申请的内存大小后：
+```c
+use_top:
+      /*
+         If large enough, split off the chunk bordering the end of memory
+         (held in av->top). Note that this is in accord with the best-fit
+         search rule.  In effect, av->top is treated as larger (and thus
+         less well fitting) than any other available chunk since it can
+         be extended to be as large as necessary (up to system
+         limitations).
+
+         We require that av->top always exists (i.e., has size >=
+         MINSIZE) after initialization, so if it would otherwise be
+         exhausted by current request, it is replenished. (The main
+         reason for ensuring it exists is that we may need MINSIZE space
+         to put in fenceposts in sysmalloc.)
+       */
+
+      victim = av->top;
+      size = chunksize (victim);
+
+      if ((unsigned long) (size) >= (unsigned long) (nb + MINSIZE))
+        {
+          remainder_size = size - nb;
+          remainder = chunk_at_offset (victim, nb);
+          av->top = remainder;
+          set_head (victim, nb | PREV_INUSE |
+                    (av != &main_arena ? NON_MAIN_ARENA : 0));
+          set_head (remainder, remainder_size | PREV_INUSE);
+
+          check_malloced_chunk (av, victim, nb);
+          void *p = chunk2mem (victim);
+          alloc_perturb (p, bytes);
+          return p;
+        }
+
+      /* When we are using atomic ops to free fast chunks we can get
+         here for all block sizes.  */
+      else if (atomic_load_relaxed (&av->have_fastchunks))
+        {
+          malloc_consolidate (av);
+          /* restore original bin index */
+          if (in_smallbin_range (nb))
+            idx = smallbin_index (nb);
+          else
+            idx = largebin_index (nb);
+        }
+
+      /*
+         Otherwise, relay to handle system-dependent cases
+       */
+      else
+        {
+          void *p = sysmalloc (nb, av);
+          if (p != NULL)
+            alloc_perturb (p, bytes);
+          return p;
+        }
+    }
+}
+
+```
 1. 先调用`malloc_consolidate`,将内存中相邻的、已经被free的堆块都合并，放在unsorted bin中；
 2. 判断unsored bin 中的块是否符合用户需求，如不符合，将该块放入对应大小的bin中，（本题中是small bin，符合unsorted bin 的逻辑)
 3. topchunk此时的大小还是不足，但是可能是由于smallbin里面有没被使用的内存块，且大小足够大，因此ptmalloc没有调用sysmalloc从系统申请新的topchunk，而是从smallbin里取出那块内存进行分割，剩余部分存放在unsorted bin，并且在last_remainder中也有地址记录。
