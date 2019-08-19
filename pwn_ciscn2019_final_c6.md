@@ -6,6 +6,10 @@
 - gdb 源码级调试glibc
 - house of orange 基本原理
 ## gdb 源码级调试
+```shell
+
+```
+
 ## house of orange 基本原理
 
 # exp
@@ -75,4 +79,3 @@ io.interactive()
 
 # 待解决
 1. 为什么`libc_base = int(add(8,0x48,"12345"),16)- 4111520`会修改topchunk的指针？
-2. 为什么top chunk 
