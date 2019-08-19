@@ -100,44 +100,8 @@ use_top:
 
 ```
 1. 先调用`malloc_consolidate`,将fastbin中的所有堆块取出并合并，放在unsorted bin中；
-2. 注意在ptmalloc使用一个无限循环来申请堆块，因此在malloc_consolidate改变了fastbin和unsortedbin的布局后，又会重新判断更新后的堆布局中是否存在满足用户申请的内存的块，因此会重走一边判定代码。由于我们申请的内存为0x78， 而unsorted bin中的堆块大小为0xb0，因此ptmalloc会将不符合要求的unsorted bin中的块放到隶属的small bin下面
-```c
-/*
-             If a small request, try to use last remainder if it is the
-             only chunk in unsorted bin.  This helps promote locality for
-             runs of consecutive small requests. This is the only
-             exception to best-fit, and applies only when there is
-             no exact fit for a small chunk.
-           */
+2. 注意在ptmalloc使用一个无限循环来申请堆块，因此在malloc_consolidate改变了fastbin和unsortedbin的布局后，又会重新判断更新后的堆布局中是否存在满足用户申请的内存的块，因此会重走一遍从堆上malloc内存的流程。由于我们申请的内存为0x78， 而unsorted bin中的堆块大小为0xb0，因此ptmalloc会将不符合要求的unsorted bin中的块放到隶属的small bin下面。
 
-          if (in_smallbin_range (nb) &&
-              bck == unsorted_chunks (av) &&
-              victim == av->last_remainder &&
-              (unsigned long) (size) > (unsigned long) (nb + MINSIZE))
-            {
-              /* split and reattach remainder */
-              remainder_size = size - nb;
-              remainder = chunk_at_offset (victim, nb);
-              unsorted_chunks (av)->bk = unsorted_chunks (av)->fd = remainder;
-              av->last_remainder = remainder;
-              remainder->bk = remainder->fd = unsorted_chunks (av);
-              if (!in_smallbin_range (remainder_size))
-                {
-                  remainder->fd_nextsize = NULL;
-                  remainder->bk_nextsize = NULL;
-                }
-
-              set_head (victim, nb | PREV_INUSE |
-                        (av != &main_arena ? NON_MAIN_ARENA : 0));
-              set_head (remainder, remainder_size | PREV_INUSE);
-              set_foot (remainder, remainder_size);
-
-              check_malloced_chunk (av, victim, nb);
-              void *p = chunk2mem (victim);
-              alloc_perturb (p, bytes);
-              return p;
-            
-```
 
 3. topchunk此时的大小还是不足，但是可能是由于smallbin里面有没被使用的内存块，且大小足够大，因此ptmalloc没有调用sysmalloc从系统申请新的topchunk，而是从smallbin里取出那块内存进行分割，剩余部分存放在unsorted bin，并且在last_remainder中也有地址记录。
 4. 上一步中存放在unsorted bin中的块在本题中可以被利用来泄露libc地址。
