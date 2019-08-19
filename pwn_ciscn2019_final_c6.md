@@ -109,4 +109,4 @@ io.interactive()
 
 # 待解决
 1. 为什么`libc_base = int(add(8,0x48,"12345"),16)- 4111520`会修改topchunk地址？
-2. 为什么topchunk枯竭后没有被free到unsorted bin中
+2. 为什么topchunk枯竭后没有被free到unsorted bin中，旧的topchunk被存到哪了？
