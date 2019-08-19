@@ -22,7 +22,8 @@ dir /usr/src/glibc/glibc-x.xx/malloc
 本题的关键难点在于如何泄露libc地址。由于题目限制，无法通过malloc和free将堆块放到unsorted bin这样的双向链表中。
 通过学习和调试，了解了glibc-2.27在topchunk大小无法满足用户申请的内存大小后：
 1. 先调用`malloc_consolidate`,将内存中相邻的、已经被free的堆块都合并，放在unsorted bin中；
-2. 判断unsored bin 中的块是否符合用户需求，如不符合，将
+2. 判断unsored bin 中的块是否符合用户需求，如不符合，将该块放入对应大小的bin中，（本题中是small bin，符合unsorted bin 的逻辑)
+3. 
 # exp
 ```python
 from pwn import *
