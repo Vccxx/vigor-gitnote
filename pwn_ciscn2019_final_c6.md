@@ -18,7 +18,8 @@ sudo tar xvf glibc-x.xx.tar.xz
 dir /usr/src/glibc/glibc-x.xx/malloc
 ```
 即可开始调试。
-## house of orange 基本原理及在本题中的
+## house of orange 基本原理及在本题中的应用
+house of orange简单来说就是利用溢出或者任意地址写的前置漏洞来修改topchunk的size字段，将其改小，从而
 本题的关键难点在于如何泄露libc地址。由于题目限制，无法通过malloc和free将堆块放到unsorted bin这样的双向链表中。
 通过学习和调试，了解了glibc-2.27在topchunk大小无法满足用户申请的内存大小后：
 1. 先调用`malloc_consolidate`,将内存中相邻的、已经被free的堆块都合并，放在unsorted bin中；
