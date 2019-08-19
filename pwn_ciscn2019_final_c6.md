@@ -147,7 +147,7 @@ use_top:
 4. 上一步中存放在unsorted bin中的块在本题中可以被利用来泄露libc地址。
 
 实际上本题没有用到house of orange 的技巧，因为不知道为什么top chunk枯竭后，即使fastbin和所有bin中都没有可用的块，仍然不会将现存的topchunk放到unsorted bin中（甚至没有出现在任何bin中）。
-值得一提的是，
+
 # exp
 ```python
 from pwn import *
