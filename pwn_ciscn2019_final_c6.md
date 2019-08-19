@@ -99,7 +99,7 @@ use_top:
 }
 
 ```
-1. 先调用`malloc_consolidate`,将fastbin中的所有堆块放入内存中相邻的、已经被free的堆块都合并，放在unsorted bin中；
+1. 先调用`malloc_consolidate`,将fastbin中的所有堆块取出并合并，放在unsorted bin中；
 2. 判断unsored bin 中的块是否符合用户需求，如不符合，将该块放入对应大小的bin中，（本题中是small bin，符合unsorted bin 的逻辑)
 3. topchunk此时的大小还是不足，但是可能是由于smallbin里面有没被使用的内存块，且大小足够大，因此ptmalloc没有调用sysmalloc从系统申请新的topchunk，而是从smallbin里取出那块内存进行分割，剩余部分存放在unsorted bin，并且在last_remainder中也有地址记录。
 4. 上一步中存放在unsorted bin中的块在本题中可以被利用来泄露libc地址。
