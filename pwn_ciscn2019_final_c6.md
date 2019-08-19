@@ -36,7 +36,7 @@ house of orange简单来说就是利用溢出或者任意地址写的前置漏�
 
 本题的关键难点在于如何泄露libc地址。由于题目限制，无法通过malloc和free将堆块放到unsorted bin这样的双向链表中。
 通过上述的house of orange 似乎可以方便地泄露libc地址，但是实验发现topchunk在
-![image.png](0)
+![image.png](0) ![image.png](1)
 通过学习和调试，了解了glibc-2.27在topchunk大小无法满足用户申请的内存大小后：
 1. 先调用`malloc_consolidate`,将内存中相邻的、已经被free的堆块都合并，放在unsorted bin中；
 2. 判断unsored bin 中的块是否符合用户需求，如不符合，将该块放入对应大小的bin中，（本题中是small bin，符合unsorted bin 的逻辑)
