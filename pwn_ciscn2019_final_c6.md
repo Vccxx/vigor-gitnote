@@ -24,9 +24,9 @@ house of orange简单来说就是利用溢出或者任意地址写的前置漏�
 修改topchunk的size有四个限制：
 1.	伪造的 size 必须要对齐到内存页
 
-2.	size 要大于 MINSIZE(0x10,MIN_CHUNK_SIZE)
+2.	size 要大于 MIN_CHUNK_SIZE(0x10)
 
-3.	size 要小于之后申请的 chunk size + MINSIZE(0x10,MIN_CHUNK_SIZE)
+3.	size 要小于之后申请的 chunk size + MIN_CHUNK_SIZE(0x10)
 
 4.	size 的 prev inuse 位必须为 1
 
