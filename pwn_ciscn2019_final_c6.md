@@ -6,8 +6,12 @@
 - gdb 源码级调试glibc
 - house of orange 基本原理
 ## gdb 源码级调试
+an
 ```shell
-
+sudo apt-get install libc6-dbg
+sudo apt-get install glibc-source
+cd /usr/src/glibc
+sudo tar xvf glibc-x.xx.tar.xz
 ```
 
 ## house of orange 基本原理
