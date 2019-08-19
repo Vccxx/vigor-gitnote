@@ -73,4 +73,4 @@ io.interactive()
 ```
 
 # 待解决
-1. 为什么``
+1. 为什么`libc_base = int(add(8,0x48,"12345"),16)- 4111520`会修改topchunk的指针？
