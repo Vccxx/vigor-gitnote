@@ -20,7 +20,7 @@ dir /usr/src/glibc/glibc-x.xx/malloc
 即可开始调试。
 ## house of orange 基本原理
 本题的关键难点在于如何泄露libc地址。由于题目限制，无法通过malloc和free将堆块放到unsorted bin这样的双向链表中。
-通过学习和调试，发现glibc在
+通过学习和调试，了解了glibc在topchunk大小无法满足用户申请的内存大小后，
 # exp
 ```python
 from pwn import *
