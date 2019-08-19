@@ -100,7 +100,7 @@ use_top:
 
 ```
 1. 先调用`malloc_consolidate`,将fastbin中的所有堆块取出并合并，放在unsorted bin中；
-2. 注意在ptmalloc使用一个无限循环来申请堆块，因此在malloc_consolidate改变了fastbin和unsortedbin的布局后，又会重新判断更新后的堆布局中是否存在满足用户申请的内存的块，因此会走到这段代码中。由于我们申请的内存为0x78，而unsorted bin 中此时的确存在一个大小为0xb0的块，
+2. 注意在ptmalloc使用一个无限循环来申请堆块，因此在malloc_consolidate改变了fastbin和unsortedbin的布局后，又会重新判断更新后的堆布局中是否存在满足用户申请的内存的块，因此会走到这段代码中。由于我们申请的内存为0x78， 
 ```c
 /*
              If a small request, try to use last remainder if it is the
