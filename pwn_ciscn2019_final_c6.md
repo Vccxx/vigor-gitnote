@@ -113,6 +113,34 @@ use_top:
          The particular case of skipping all bins during warm-up phases
          when no chunks have been returned yet is faster than it might look.
        */
+ 	....
+	      size = chunksize (victim);
+
+              /*  We know the first chunk in this bin is big enough to use. */
+              assert ((unsigned long) (size) >= (unsigned long) (nb));
+
+              remainder_size = size - nb;
+
+              /* unlink */
+              unlink (av, victim, bck, fwd);
+
+              /* Exhaust */
+              if (remainder_size < MINSIZE)
+                {
+                  set_inuse_bit_at_offset (victim, size);
+                  if (av != &main_arena)
+		    set_non_main_arena (victim);
+                }
+
+              /* Split */
+              else
+                {
+                  remainder = chunk_at_offset (victim, nb);
+
+                  /* We cannot assume the unsorted list is empty and therefore
+                     have to perform a complete insert here.  */
+                  bck = unsorted_chunks (av);
+                  fwd = bck->fd;	
 ```
 因此ptmalloc会遍历所有的bin，将大小大于当前用户申请的块的大小的块取出并进行分割，剩余部分存放在unsorted bin，并且在last_remainder中也有地址记录。
 4. 上一步中存放在unsorted bin中的块在本题中可以被利用来泄露libc地址。
