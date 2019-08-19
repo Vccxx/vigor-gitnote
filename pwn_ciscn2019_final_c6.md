@@ -114,7 +114,7 @@ use_top:
          when no chunks have been returned yet is faster than it might look.
        */
 ```
-因此ptmalloc会遍历整个内存没有调用sysmalloc从系统申请新的topchunk，而是从smallbin里取出那块内存进行分割，剩余部分存放在unsorted bin，并且在last_remainder中也有地址记录。
+因此ptmalloc会遍历所有的bin，将大小大于当前用户申请的块的大小的块取出并进行分割，剩余部分存放在unsorted bin，并且在last_remainder中也有地址记录。
 4. 上一步中存放在unsorted bin中的块在本题中可以被利用来泄露libc地址。
 # exp
 ```python
