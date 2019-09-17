@@ -29,7 +29,7 @@ house of orange简单来说就是利用溢出或者任意地址写的前置漏�
 
 3.	size 要小于之后申请的 chunk size + MIN_CHUNK_SIZE(0x10)
 
-4.	size 的 prev inuse 位必须为 1
+	1.	size 的 prev inuse 位必须为 1
 
 这样的手法主要用于
 - 不能调用free函数的情况（它能够触发free(topchunk)）；
